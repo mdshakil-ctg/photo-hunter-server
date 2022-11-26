@@ -50,7 +50,38 @@ async function run(){
          const email = req.params.email;
          const query = {email}
          const user = await userCollection.findOne(query);
-         res.send({isSeller: user?.role === "Seller"})
+         console.log(user)
+         if(user.role === "Seller"){
+           return res.send({isSeller: user?.role === "Seller"})
+         }
+         if(user.role === "Admin"){
+           return res.send({isAdmin: user?.role === "Admin"})
+         }
+      })
+
+      app.delete('/user/delete/:id', async(req, res)=>{
+         const id = req.params.id
+         const query = {
+            _id: ObjectId(id)
+         }
+         const result = await userCollection.deleteOne(query)
+         res.send(result);
+      })
+
+      app.get('/dashboard/all-buyer', async(req, res)=>{
+         const query = {
+            role: 'Buyer'
+         }
+         const users = await userCollection.find(query).toArray()
+         res.send(users)
+      })
+
+      app.get('/dashboard/all-seller', async(req, res)=>{
+         const query = {
+            role: 'Seller'
+         }
+         const users = await userCollection.find(query).toArray()
+         res.send(users)
       })
 
       app.get('/dashboard', async(req, res)=>{
