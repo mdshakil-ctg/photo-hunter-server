@@ -5,6 +5,7 @@ require('dotenv').config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const { query } = require('express');
 const port = process.env.PORT || 5000;
 
 
@@ -20,6 +21,24 @@ app.get('/', (req, res)=>{
    res.send('car server is running please asure that')
 })
 
+function verifyJwt(req, res, next){
+   
+   const authHeader = req.headers.authorization;
+   if(!authHeader){
+      return res.status(401).send({message:'unauthorized access'})
+   }
+   const token = authHeader.split(' ')[1];
+
+   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded){
+     
+      if(err){
+         return res.status(403).send({message: 'forbidden access'})
+      }
+      req.decoded = decoded;
+      next();
+   })
+}
+
 
 async function run(){
    try{
@@ -29,6 +48,8 @@ async function run(){
       const bookingsCollection = client.db('resalePlanet').collection('bookings');
       const paymentsCollection = client.db('resalePlanet').collection('payment');
       const advertisedCollection = client.db('resalePlanet').collection('advertised');
+      const reportedCollection = client.db('resalePlanet').collection('reported');
+      const wishlistCollection = client.db('resalePlanet').collection('wishlist');
 
       app.get('/all-catagory', async(req, res)=>{
          const query = {};
@@ -50,7 +71,7 @@ async function run(){
          const email = req.params.email;
          const query = {email}
          const user = await userCollection.findOne(query);
-         console.log(user)
+         // console.log(user)
          if(user?.role === "Seller"){
            return res.send({isSeller: user?.role === "Seller"})
          }
@@ -88,6 +109,12 @@ async function run(){
          res.send(users)
       })
 
+      app.get('/dashboard/report-item', async(req, res)=>{
+         const query = {}
+         const allReportedItem = await reportedCollection.find(query).toArray()
+         res.send(allReportedItem)
+      })
+
       app.get('/user/verify/:id', async(req, res)=>{
          const id = req.params.id
          const filter = {
@@ -110,18 +137,31 @@ async function run(){
          res.send(result)
       })
 
-      app.get('/dashboard', async(req, res)=>{
-         
-         const email = req.query.email;
+      app.get('/dashboard/myorder', async(req, res)=>{
+         const email = req.query.email
          const filter = {
-            email
+            buyer_email: email
          }
+         const result = await bookingsCollection.find(filter).toArray();
+         res.send(result)
+      })
+
+      app.get('/dashboard', async(req, res)=>{
+         const email = req.query.email;
+         // console.log('query email', email)
+
+         // if(decodedEmail !== email){
+         //    return res.status(403).send({message: 'Unauthorized Access'})
+         // }
+         // const filter = {
+         //    buyer_email: email
+         // }
          const user = await userCollection.findOne(filter)
          // console.log(user)
-         if(user?.role == 'Buyer'){
-            const result = await bookingsCollection.find(filter).toArray();
-            return res.send(result)
-         }
+         // if(user?.role == 'Buyer'){
+         //    const result = await bookingsCollection.find(filter).toArray();
+         //    return res.send(result)
+         // }
          if(user?.role == 'Seller'){
             return res.send({isSeller: true})
          }
@@ -129,6 +169,13 @@ async function run(){
             return res.send({message: "Unauthorized Access"})
          }
          
+      })
+
+      app.post('/product/report', async(req, res)=>{
+         const product = req.body
+         console.log(product)
+         const result = await reportedCollection.insertOne(product)
+         res.send(result)
       })
 
       app.get('/dashboard/my-product', async(req, res)=>{
@@ -160,15 +207,6 @@ async function run(){
         return res.send(allProduct)
       })
       
-      // app.delete('/dashboard/my-product/:id',async(req, res)=>{
-      //    const id = req.params.id;
-      //    const query = {
-      //       _id: ObjectId(id)
-      //    }
-      //    const result = await singleCatagoryCollection.deleteOne(query)
-      //    res.send(result)
-      // })
-
       app.delete('/dashboard/my-product/:id', async(req, res)=>{
          const id= req.params.id;
          const query = {_id: ObjectId(id)}
@@ -256,6 +294,46 @@ async function run(){
          const result = await singleCatagoryCollection.insertOne(productInfo);
          res.send(result);
       })
+
+      app.get('/jwt', async(req, res)=>{
+         const email = req.query.email;
+         // console.log('email', email)
+         const query = {email: email};
+         const user = await userCollection.findOne(query)
+         if(user){
+            const token = jwt.sign({email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1d'});
+            return res.send({accessToken : token})
+         }
+         else{
+            return res.status(403).send({accessToken: ''})
+         }
+      })
+
+      app.post('/wishlist', async(req, res)=>{
+         const productwish = req.body
+         const id = productwish.id
+         const email = productwish.email
+         console.log(id,email)
+         const query =  {
+            _id: ObjectId(id)
+         }
+         const product = await singleCatagoryCollection.findOne(query)
+         console.log('product',product)
+         product.user_email = email
+         const result = await wishlistCollection.insertOne(product)
+         // const result = await wishlistCollection.insertOne(product)
+         res.send(result)
+
+      })
+
+      app.get('dashboard/mywishlistData/:email',async(req, res)=>{
+         const email = req.params.email
+         const query = {user_email: email}
+         const result = await wishlistCollection.find(query).toArray()
+         console.log('wish',result)
+         res.send(result)
+      })
+
    }
    finally{
 
