@@ -51,10 +51,10 @@ async function run(){
          const query = {email}
          const user = await userCollection.findOne(query);
          console.log(user)
-         if(user.role === "Seller"){
+         if(user?.role === "Seller"){
            return res.send({isSeller: user?.role === "Seller"})
          }
-         if(user.role === "Admin"){
+         if(user?.role === "Admin"){
            return res.send({isAdmin: user?.role === "Admin"})
          }
       })
@@ -64,6 +64,10 @@ async function run(){
          const query = {
             _id: ObjectId(id)
          }
+         const user = await userCollection.findOne(query)
+         const email = user.email
+         const productQuery = {seller_email: email}
+         const final = await singleCatagoryCollection.deleteMany(productQuery);
          const result = await userCollection.deleteOne(query)
          res.send(result);
       })
@@ -82,6 +86,28 @@ async function run(){
          }
          const users = await userCollection.find(query).toArray()
          res.send(users)
+      })
+
+      app.get('/user/verify/:id', async(req, res)=>{
+         const id = req.params.id
+         const filter = {
+            _id: ObjectId(id)
+         }
+
+         const user = await userCollection.findOne(filter)
+         const email = user.email
+         const emailFilter = {seller_email:email}
+
+
+         const options = {upsert: true}
+         const updatedDoc = {
+            $set:{
+               status: 'verifyed'
+            }
+         }
+         const update = await singleCatagoryCollection.updateMany(emailFilter, updatedDoc, options)
+         const result = await userCollection.updateOne(filter, updatedDoc, options)
+         res.send(result)
       })
 
       app.get('/dashboard', async(req, res)=>{
@@ -192,8 +218,16 @@ async function run(){
 
       app.post('/users', async(req, res)=>{
          const user = req.body;
-         const result = await userCollection.insertOne(user);
-         res.send(result);
+         const query = {
+            email: user.email 
+         }
+         const isUser = await userCollection.findOne(query)
+         console.log(isUser)
+         if(!isUser){
+            const result = await userCollection.insertOne(user);
+           return res.send(result);
+         }
+         res.send({message: 'user already added'})
       })
 
       app.post('/bookings', async(req, res)=>{
@@ -213,6 +247,12 @@ async function run(){
 
       app.post('/dashboard/add-product', async(req, res)=>{
          const productInfo = req.body;
+         // const email = productInfo.seller_email
+         // const query = {email}
+         // const isverified = await userCollection.findOne(query)
+         // if(isverified.status){
+         //    productInfo.status = "verifyed"
+         // }
          const result = await singleCatagoryCollection.insertOne(productInfo);
          res.send(result);
       })
