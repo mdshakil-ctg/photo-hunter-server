@@ -96,6 +96,12 @@ async function run(){
         return res.send({message: 'product already in advertise'})
 
       })
+
+      app.get('/advertise',async(req, res)=>{
+         const query = {}
+         const allProduct = await advertisedCollection.find(query).toArray()
+        return res.send(allProduct)
+      })
       
       // app.delete('/dashboard/my-product/:id',async(req, res)=>{
       //    const id = req.params.id;
