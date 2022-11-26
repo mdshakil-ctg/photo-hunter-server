@@ -1,0 +1,26 @@
+[
+   {
+      "title": "Luxury Same As New",
+      "img_url": "https://i.ibb.co/YBY4Tyx/catagory-luxury.jpg",
+      "catagory_id": "01",
+      "description": "A luxury car is a car that provides increased levels of comfort, equipment, amenities, quality, performance, and associated status compared to moderately priced cars."
+      
+   },
+   {
+      "title": "Sports Car At Fresh Condition",
+      "img_url": "https://i.ibb.co/jWwSHT7/catagory-sports.jpg",
+      "catagory_id": "02",
+      "description": "There are different versions of sports cars. There are automobiles with the motor in the front and those with rear-wheel drive. Examples are the Chevrolet Corvette or the Honda S2000."
+      
+   },
+   {
+      "title": "Electric Car With More Power",
+      "img_url": "https://i.ibb.co/F5x13Th/catagory-electric.jpg",
+      "catagory_id": "03",
+      "description": "The electricity that charges and fuels battery electric and plug-in hybrid vehicles comes from power grids, which rely on a range of sources — from fossil fuels to clean renewable energy."
+      
+   }
+]
+
+
+

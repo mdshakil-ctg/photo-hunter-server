@@ -3,6 +3,27 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongodb": "^4.12.0"
-  }
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.12.1",
+    "stripe": "^11.1.0"
+  },
+  "name": "resale-planet-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/programming-hero-web-course-4/b612-used-products-resale-server-side-mdshakil-ctg.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/programming-hero-web-course-4/b612-used-products-resale-server-side-mdshakil-ctg/issues"
+  },
+  "homepage": "https://github.com/programming-hero-web-course-4/b612-used-products-resale-server-side-mdshakil-ctg#readme",
+  "description": ""
 }

@@ -1,0 +1,76 @@
+[
+   {
+      "name": "Toyota Corola",
+      "img_url": "https://i.ibb.co/kKrHBjf/luxury01.jpg",
+      "catagory_id": "luxury",
+      "location": "dhaka",
+      "price": "10000",
+      "original_price": "15000",
+      "used_duration": "6",
+      "post_time": "20/9/20",
+      "seller_name": "Parvez",
+      "veryfied_seller": "true"
+
+   },
+   {
+      "name": "Nissan",
+      "img_url": "https://i.ibb.co/mtGFDpk/luxury02.jpg",
+      "catagory_id": "luxury",
+      "location": "dhaka",
+      "price": "21500",
+      "original_price": "9500",
+      "used_duration": "6",
+      "post_time": "20/9/20",
+      "seller_name": "Shakil",
+      "veryfied_seller": "true"
+   },
+   {
+      "name": "Parado",
+      "img_url": "https://i.ibb.co/KrGj4CY/sports01.jpg",
+      "catagory_id": "sports",
+      "location": "dhaka",
+      "price": "20000",
+      "original_price": "12000",
+      "used_duration": "6",
+      "post_time": "20/9/20",
+      "seller_name": "Azom",
+      "veryfied_seller": "false"
+   },
+   {
+      "name": "voxy",
+      "img_url": "https://i.ibb.co/rk2bdYV/sports02.jpg",
+      "catagory_id": "sports",
+      "location": "dhaka",
+      "price": "10700",
+      "original_price": "13000",
+      "used_duration": "6",
+      "post_time": "20/9/20",
+      "seller_name": "Shabnoor",
+      "veryfied_seller": "false"
+   },
+   {
+      "name": "voxwagon batary",
+      "img_url": "https://i.ibb.co/7CR7d8T/electric01.jpg",
+      "catagory_id": "electric",
+      "location": "dhaka",
+      "price": "10500",
+      "original_price": "11000",
+      "used_duration": "6",
+      "post_time": "20/9/20",
+      "seller_name": "Riaz",
+      "veryfied_seller": "true"
+   },
+   {
+      "name": "walton",
+      "img_url": "https://i.ibb.co/yYN4JVp/electric02.jpg",
+      "catagory_id": "electric",
+      "location": "dhaka",
+      "price": "19000",
+      "original_price": "18000",
+      "used_duration": "6",
+      "post_time": "20/9/20",
+      "seller_name": "Pasha",
+      "veryfied_seller": "true"
+   }
+   
+]
