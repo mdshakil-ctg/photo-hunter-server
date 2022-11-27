@@ -109,11 +109,7 @@ async function run(){
          res.send(users)
       })
 
-      app.get('/dashboard/report-item', async(req, res)=>{
-         const query = {}
-         const allReportedItem = await reportedCollection.find(query).toArray()
-         res.send(allReportedItem)
-      })
+      
 
       app.get('/user/verify/:id', async(req, res)=>{
          const id = req.params.id
@@ -171,12 +167,12 @@ async function run(){
          
       })
 
-      app.post('/product/report', async(req, res)=>{
-         const product = req.body
-         console.log(product)
-         const result = await reportedCollection.insertOne(product)
-         res.send(result)
-      })
+      // app.post('/product/report', async(req, res)=>{
+      //    const product = req.body
+      //    console.log(product)
+      //    const result = await reportedCollection.insertOne(product)
+      //    res.send(result)
+      // })
 
       app.get('/dashboard/my-product', async(req, res)=>{
          const email = req.query.email         
@@ -311,9 +307,10 @@ async function run(){
 
       app.post('/wishlist', async(req, res)=>{
          const productwish = req.body
+         
          const id = productwish.id
          const email = productwish.email
-         console.log(id,email)
+         console.log(productwish)
          const query =  {
             _id: ObjectId(id)
          }
@@ -326,11 +323,43 @@ async function run(){
 
       })
 
+      app.post('/report', async(req, res)=>{
+         const product = req.body
+         const id = product.report_id
+         // console.log('id',id)
+         const query = {report_id : id}
+         const alreadyReport = await reportedCollection.findOne(query)
+         if(!alreadyReport){
+            const result = await reportedCollection.insertOne(product)
+            // console.log(result)
+            return res.send(result)
+         }
+         return res.send({message:'already reported'})
+      })
+
       app.get('dashboard/mywishlistData/:email',async(req, res)=>{
          const email = req.params.email
          const query = {user_email: email}
          const result = await wishlistCollection.find(query).toArray()
-         console.log('wish',result)
+         // console.log('wish',result)
+         res.send(result)
+      })
+
+      app.get('/report', async(req, res)=>{
+         const query = {}
+         const allReportedItem = await reportedCollection.find(query).toArray()
+         const products = [...allReportedItem]
+         // console.log(products)
+         return res.send(products)
+      })
+
+      app.delete('/report', async(req, res)=>{
+         const id = req.body.id
+         console.log(id)
+         const query = {_id: ObjectId(id)}
+         const result = await singleCatagoryCollection.deleteOne(query)
+         const reportQuery = {report_id: id}
+         const report = await reportedCollection.deleteOne(reportQuery)
          res.send(result)
       })
 
