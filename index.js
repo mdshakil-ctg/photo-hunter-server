@@ -6,6 +6,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { query } = require('express');
+const e = require('express');
 const port = process.env.PORT || 5000;
 
 
@@ -32,7 +33,7 @@ function verifyJwt(req, res, next){
    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded){
      
       if(err){
-         return res.status(403).send({message: 'forbidden access'})
+         return res.status(403).send({errorMessage: 'Token Expired Please Log in back'})
       }
       req.decoded = decoded;
       next();
@@ -111,7 +112,13 @@ async function run(){
 
       
 
-      app.get('/user/verify/:id', async(req, res)=>{
+      app.get('/user/verify/:id',verifyJwt, async(req, res)=>{
+         const decodedEmail = req.decoded.email
+         const providedEmail = req.headers.email
+
+         if(decodedEmail !== providedEmail){
+            return res.send({errorMessage: 'UnAuthorized Access'})
+         }
          const id = req.params.id
          const filter = {
             _id: ObjectId(id)
@@ -133,8 +140,12 @@ async function run(){
          res.send(result)
       })
 
-      app.get('/dashboard/myorder', async(req, res)=>{
+      app.get('/dashboard/myorder', verifyJwt, async(req, res)=>{
+         const decodedEmail = req.decoded.email
          const email = req.query.email
+         if(decodedEmail !== email){
+            return res.send({errorMessage: 'Forbidden Access'})
+         }
          const filter = {
             buyer_email: email
          }
@@ -182,7 +193,12 @@ async function run(){
         res.send(myproduct)
       })
 
-      app.post('/dashboard/addvertise/:id', async(req, res)=>{
+      app.post('/dashboard/addvertise/:id',verifyJwt, async(req, res)=>{
+         const decodedEmail = req.decoded.email
+         const email = req.headers.email 
+         if(decodedEmail !== email){
+            return res.send({message: 'forbidden access'})
+         }
          const id = req.params.id;
          const query = {_id: ObjectId(id)}
          const product = await singleCatagoryCollection.findOne(query)
@@ -355,7 +371,7 @@ async function run(){
 
       app.delete('/report', async(req, res)=>{
          const id = req.body.id
-         console.log(id)
+         // console.log(id)
          const query = {_id: ObjectId(id)}
          const result = await singleCatagoryCollection.deleteOne(query)
          const reportQuery = {report_id: id}
