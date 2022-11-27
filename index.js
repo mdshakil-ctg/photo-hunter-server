@@ -202,10 +202,11 @@ async function run(){
          const id = req.params.id;
          const query = {_id: ObjectId(id)}
          const product = await singleCatagoryCollection.findOne(query)
+         const newProduct = {...product, product_id: id}
          if(product){
             const isAdvertise = await advertisedCollection.findOne(query)
             if(!isAdvertise){
-               const result = await advertisedCollection.insertOne(product)
+               const result = await advertisedCollection.insertOne(newProduct)
               return res.send(result);
             }
          }
@@ -253,6 +254,21 @@ async function run(){
 
      app.post('/payments', async (req, res) =>{
       const payment = req.body;
+      const productId = payment.product_id
+      const productQuery = {
+         _id : ObjectId(productId)
+      }
+      const modifeidDoc = {
+         $set: {
+            purchased: true
+         }
+      }
+      const singleUpdate = await singleCatagoryCollection.updateOne(productQuery, modifeidDoc)
+      const advertiseUpdate = await advertisedCollection.updateOne(productQuery, modifeidDoc)
+      // const product = await singleCatagoryCollection.findOne(testQuery)
+      
+      
+      
       const result = await paymentsCollection.insertOne(payment);
       const id = payment.bookingId
       const filter = {_id: ObjectId(id)}
